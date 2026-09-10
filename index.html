@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="mBjwOjIkHBmj6vmSdAL9Ck">
+<head data-page-node-id="wqHOrMcKE8BS4xT4S6f7A7">
+<meta charset="UTF-8" data-page-node-id="Rc0EsHsfAus0ucxqIEYsbn">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="hbtpC8yZ4vcLWXepczoRXO">
+<title>答题单</title>
+<style>
+  :root{
+    --primary:#4f46e5; --primary-2:#7c3aed; --primary-dark:#4338ca;
+    --ok:#059669; --ok-bg:#d1fae5; --bad:#e11d48; --bad-bg:#ffe4e6;
+    --bg:#eef2ff; --card:#ffffff; --line:#e0e7ff;
+    --text:#1e293b; --muted:#64748b;
+    --radius:16px;
+    --shadow:0 2px 10px rgba(79,70,229,.08);
+    --shadow-lg:0 10px 30px rgba(79,70,229,.18);
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  [hidden]{display:none !important;}
+  body{
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:linear-gradient(160deg,#eef2ff 0%,#f5f3ff 45%,#eff6ff 100%);
+    background-attachment:fixed;
+    color:var(--text); min-height:100vh;
+    padding-bottom:76px;
+  }
+  header.app-header{
+    background:linear-gradient(135deg,#4f46e5 0%,#6d28d9 60%,#7c3aed 100%);
+    color:#fff; padding:14px 18px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:20;
+    box-shadow:0 2px 12px rgba(79,70,229,.35);
+  }
+  .brand{font-size:19px; font-weight:800; letter-spacing:1px;}
+  .brand span{color:#c7d2fe;}
+  nav.tabs{display:flex; gap:6px;}
+  nav.tabs button{
+    border:none; background:transparent; color:#c7d2fe;
+    padding:8px 16px; font-size:15px; border-radius:20px; cursor:pointer;
+    transition:all .15s;
+  }
+  nav.tabs button:hover{color:#fff;}
+  nav.tabs button.active{background:rgba(255,255,255,.22); color:#fff; font-weight:700;}
+  .bottom-tabs{
+    position:fixed; bottom:0; left:0; right:0; z-index:30;
+    background:var(--card); border-top:1px solid var(--line);
+    display:flex; justify-content:space-around; padding:6px 0 env(safe-area-inset-bottom);
+    box-shadow:0 -2px 12px rgba(79,70,229,.08);
+  }
+  .bottom-tabs button{
+    flex:1; border:none; background:transparent; color:var(--muted);
+    font-size:12px; padding:5px 0; cursor:pointer; border-radius:12px;
+  }
+  .bottom-tabs button .ico{display:block; font-size:21px; margin-bottom:1px;}
+  .bottom-tabs button.active{color:var(--primary); font-weight:700; background:#eef2ff;}
+  main{max-width:860px; margin:0 auto; padding:18px 16px;}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px; margin-bottom:14px; box-shadow:var(--shadow);
+  }
+  .row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .between{justify-content:space-between;}
+  h2{font-size:18px; margin-bottom:10px; font-weight:800;}
+  .muted{color:var(--muted); font-size:13px;}
+  button.btn{
+    border:1px solid var(--line); background:var(--card); color:var(--text);
+    padding:9px 18px; border-radius:11px; font-size:14px; cursor:pointer;
+    transition:all .15s;
+  }
+  button.btn:hover{border-color:#c7d2fe; background:#f8faff;}
+  button.btn:active{transform:scale(.96);}
+  button.btn.primary{
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+    border:none; color:#fff; box-shadow:0 3px 10px rgba(79,70,229,.35);
+  }
+  button.btn.primary:hover{filter:brightness(1.08);}
+  button.btn.primary:disabled{opacity:.5; cursor:not-allowed; box-shadow:none;}
+  button.btn.danger{color:var(--bad); border-color:#fecdd3;}
+  button.btn.small{padding:6px 12px; font-size:13px; border-radius:9px;}
+  .bank-item{display:flex; justify-content:space-between; align-items:center; gap:10px;}
+  .bank-item .info{flex:1; min-width:0;}
+  .bank-item .name{font-size:16px; font-weight:700; margin-bottom:4px;}
+  .tag{
+    display:inline-block; font-size:11px; color:#fff; font-weight:600;
+    background:linear-gradient(135deg,#818cf8,#a78bfa);
+    border-radius:6px; padding:2px 7px; margin-left:6px;
+  }
+  .empty{ text-align:center; color:var(--muted); padding:40px 0; font-size:14px;}
+  .q-item{border-top:1px dashed var(--line); padding:14px 0;}
+  .q-item:first-of-type{border-top:none;}
+  .q-stem{font-size:15px; font-weight:700; margin-bottom:6px;}
+  .q-opts{color:var(--muted); font-size:13px; line-height:1.9;}
+  .q-ans{font-size:13px; margin-top:4px;}
+  .q-ans b.ok{color:var(--ok);} .q-ans b.bad{color:var(--bad);}
+  /* 答题页 */
+  .quiz-top{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    margin-bottom:12px;
+  }
+  .timer{
+    font-variant-numeric:tabular-nums; font-weight:800; font-size:15px; color:#fff;
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+    border-radius:20px; padding:5px 14px;
+    box-shadow:0 2px 8px rgba(79,70,229,.3);
+  }
+  .progress-wrap{height:8px; background:#e0e7ff; border-radius:4px; overflow:hidden; margin-bottom:14px;}
+  .progress-bar{
+    height:100%; width:0; border-radius:4px; transition:width .3s;
+    background:linear-gradient(90deg,#4f46e5,#7c3aed,#a78bfa);
+  }
+  .quiz-nav{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px;}
+  .quiz-nav button{
+    width:36px; height:36px; border-radius:11px; border:1px solid var(--line);
+    background:var(--card); color:var(--muted); font-size:13px; font-weight:600; cursor:pointer;
+    transition:all .12s;
+  }
+  .quiz-nav button:hover{border-color:#a5b4fc;}
+  .quiz-nav button.correct{background:var(--ok-bg); border-color:var(--ok); color:var(--ok);}
+  .quiz-nav button.wrong{background:var(--bad-bg); border-color:var(--bad); color:var(--bad);}
+  .quiz-nav button.current{outline:2px solid var(--primary); outline-offset:2px; color:var(--primary);}
+  .stem{font-size:18px; font-weight:700; line-height:1.7; margin-bottom:18px;}
+  .opt{
+    display:flex; align-items:flex-start; gap:12px; width:100%; text-align:left;
+    border:1.5px solid var(--line); background:var(--card); border-radius:13px;
+    padding:15px 16px; font-size:15.5px; line-height:1.5; margin-bottom:11px; cursor:pointer;
+    transition:all .15s; box-shadow:0 1px 3px rgba(79,70,229,.06);
+  }
+  .opt .letter{
+    flex:none; width:28px; height:28px; border-radius:50%;
+    border:1.5px solid #c7d2fe; background:#eef2ff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:800; color:var(--primary);
+    transition:all .15s;
+  }
+  .opt:not(:disabled):hover{border-color:#818cf8; transform:translateY(-1px); box-shadow:0 4px 12px rgba(79,70,229,.15);}
+  .opt.correct{background:var(--ok-bg); border-color:var(--ok); animation:pop .25s;}
+  .opt.correct .letter{background:var(--ok); border-color:var(--ok); color:#fff;}
+  .opt.wrong{background:var(--bad-bg); border-color:var(--bad); animation:pop .25s;}
+  .opt.wrong .letter{background:var(--bad); border-color:var(--bad); color:#fff;}
+  .opt:disabled{cursor:default;}
+  .opt.dim{opacity:.45;}
+  @keyframes pop{0%{transform:scale(.97);}60%{transform:scale(1.015);}100%{transform:scale(1);}}
+  .feedback{margin:12px 0 6px; font-size:16px; font-weight:800; animation:pop .3s;}
+  .feedback.ok{color:var(--ok);} .feedback.bad{color:var(--bad);}
+  .explain{
+    background:#f5f3ff; border:1px solid #ddd6fe; border-radius:11px;
+    padding:11px 14px; font-size:14px; color:#4c1d95; line-height:1.7; margin-bottom:12px;
+  }
+  .quiz-footer{display:flex; justify-content:space-between; gap:10px; margin-top:16px;}
+  /* 弹窗 */
+  .modal-mask{
+    position:fixed; inset:0; background:rgba(30,27,75,.5); z-index:50;
+    display:flex; align-items:center; justify-content:center; padding:16px;
+    backdrop-filter:blur(3px);
+  }
+  .modal{
+    background:var(--card); border-radius:20px; width:100%; max-width:420px;
+    max-height:86vh; overflow:auto; padding:22px;
+    box-shadow:var(--shadow-lg); animation:rise .25s;
+  }
+  @keyframes rise{0%{transform:translateY(14px); opacity:0;}100%{transform:translateY(0); opacity:1;}}
+  .modal h3{font-size:18px; margin-bottom:14px; font-weight:800;}
+  .modal label.f{display:block; font-size:13px; color:var(--muted); margin:12px 0 6px; font-weight:600;}
+  .modal input[type=text], .modal input[type=number], .modal textarea{
+    width:100%; border:1.5px solid var(--line); border-radius:11px; padding:10px 13px;
+    font-size:15px; font-family:inherit; transition:border .15s;
+  }
+  .modal input:focus, .modal textarea:focus{outline:none; border-color:#818cf8;}
+  .modal textarea{min-height:70px; resize:vertical;}
+  .radio-line{display:flex; align-items:center; gap:6px; font-size:14px; padding:6px 0;}
+  .modal-actions{display:flex; gap:10px; margin-top:20px;}
+  .modal-actions .btn{flex:1; padding:12px 0; font-size:15px; border-radius:12px;}
+  .count-chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    border:1.5px solid var(--line); border-radius:20px; padding:8px 17px;
+    font-size:14px; background:var(--card); cursor:pointer; transition:all .15s;
+  }
+  .chip:hover{border-color:#a5b4fc;}
+  .chip.active{
+    background:linear-gradient(135deg,#4f46e5,#7c3aed); border-color:transparent;
+    color:#fff; font-weight:700; box-shadow:0 3px 8px rgba(79,70,229,.3);
+  }
+  /* 结算 */
+  .settle-stats{display:flex; text-align:center; margin:18px 0 8px;}
+  .settle-stats .s{flex:1;}
+  .settle-stats .num{font-size:27px; font-weight:800; color:var(--primary);}
+  .settle-stats .num.ok{color:var(--ok);}
+  .settle-stats .lbl{font-size:12px; color:var(--muted); margin-top:4px;}
+  /* 历史 */
+  .rec-item{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:11px 0; border-top:1px dashed var(--line);}
+  .rec-item:first-of-type{border-top:none;}
+  .rec-acc{font-size:21px; font-weight:800; color:var(--primary);}
+  /* 错题本 */
+  .wrong-bank-title{font-size:15px; font-weight:800; margin:16px 0 8px; display:flex; justify-content:space-between; align-items:center; gap:8px;}
+  .wrong-item{border:1.5px solid var(--line); border-radius:13px; padding:13px; margin-bottom:11px; font-size:14px; background:#fcfcff;}
+  .wrong-item .stem{font-size:14px; font-weight:700; margin-bottom:6px;}
+  form .opt-line{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  form .opt-line input[type=text]{flex:1;}
+  form .opt-line input[type=radio]{width:18px; height:18px; accent-color:var(--primary);}
+  .banner{
+    background:#fef3c7; border-bottom:1px solid #fcd34d; color:#92400e;
+    padding:9px 16px; font-size:13px; line-height:1.5;
+  }
+  @media (min-width:768px){
+    body{padding-bottom:20px;}
+    .bottom-tabs{display:none;}
+    main{padding:26px 16px;}
+    .stem{font-size:19px;}
+  }
+  @media (max-width:767px){
+    .top-tabs{display:none;}
+  }
+</style>
+</head>
+<body data-page-node-id="k8T3RPRdWDAtGzsBBDShPO">
+
+<header class="app-header" data-page-node-id="tXfqz8HGoa8pzL9XDyA3TP">
+  <div class="brand" data-page-node-id="38StPZESzyM6QZN0a23iGG">📝 答题<span data-page-node-id="4GgtUpAAY30XW4PKF1Kc8S">单</span></div>
+  <nav class="tabs top-tabs" data-page-node-id="lDS2nEnAVlXqAjXnyl0DyG">
+    <button data-view="home" class="active" data-page-node-id="FGAtrUiR3LpvWmVp5kAr30">题库</button>
+    <button data-view="wrong" data-page-node-id="nRFpH4VLH2dBesFCDymHpL">错题本</button>
+    <button data-view="history" data-page-node-id="NAfVUZdHnyytypkdMHdMo3">历史</button>
+  </nav>
+</header>
+
+<main data-page-node-id="R3IfuZd1DmO5nawAu9V44v">
+  <!-- 首页：题库列表 -->
+  <section id="view-home" data-page-node-id="L7ss4mafVCMGVhGCWFp3d5">
+    <div class="card" data-page-node-id="zcjKeHHsGSVY5TyimNPARb">
+      <div class="row between" data-page-node-id="6skxHA1eaPEDe9HuO8VDrI">
+        <h2 data-page-node-id="Zzzly00BNd8tE9ib429Vxd">我的题库</h2>
+        <div class="row" data-page-node-id="ZWhXTcpd9kdrKWXO3m3jai">
+          <button class="btn small" id="btn-template" data-page-node-id="jAPB44Y7pGAshPAUXSjEsi">下载导入模板</button>
+          <button class="btn small" id="btn-export-all">导出全部题库</button>
+          <button class="btn small primary" id="btn-import" data-page-node-id="zqQVPKSbuvO1IayqEhJBUA">导入题库</button>
+          <button class="btn small" id="btn-newbank" data-page-node-id="cBMSIiSlHarBS0PDeWsPZt">新建题库</button>
+        </div>
+      </div>
+      <input type="file" id="file-import" accept=".json,application/json" hidden data-page-node-id="1PUGj5gt9pVctCCCOZCRM7">
+      <div id="bank-list" data-page-node-id="VbBCTgB3dTO4FMsEeF2258"></div>
+    </div>
+  </section>
+
+  <!-- 题库详情 -->
+  <section id="view-bank" hidden data-page-node-id="W2BeQeaAVTzWO8HyvL33Dq">
+    <div class="card" data-page-node-id="r0LO7EQs1vqqAWyXLSsyUL">
+      <div class="row between" data-page-node-id="dfTwfug6L6Q3XRR6vfWYj8">
+        <div class="row" data-page-node-id="u5wDHJoY5HCUMwVC4MMlPP">
+          <button class="btn small" id="btn-bank-back" data-page-node-id="nAGsWTxEJIWDB4NsAaeYod">← 返回</button>
+          <h2 id="bank-title" style="margin:0;" data-page-node-id="KQE40u24ihclb5U9SqKUkM"></h2>
+        </div>
+        <div class="row" data-page-node-id="H2G1bMvz1dwgOzk99liG9O">
+          <button class="btn small" id="btn-export-bank">导出题库</button>
+          <button class="btn small" id="btn-rename" data-page-node-id="jmR1bz8kHHLBIi8F0GcrW7">重命名</button>
+          <button class="btn small danger" id="btn-delbank" data-page-node-id="EEWTbK3Nhm7fAMZHtcVKBz">删除题库</button>
+          <button class="btn small primary" id="btn-addq" data-page-node-id="Dyv6FFejWHdF2IsNKOeejq">添加题目</button>
+        </div>
+      </div>
+      <div class="muted" id="bank-count" style="margin-top:6px;" data-page-node-id="lRgDYBeD9eZ12e5NmWKWAv"></div>
+      <div id="question-list" style="margin-top:10px;" data-page-node-id="3nQbXS0206WSbCtJ9YXVvb"></div>
+    </div>
+  </section>
+
+  <!-- 答题页 -->
+  <section id="view-quiz" hidden data-page-node-id="BHEA4ZPcA02BsHnTk4rx0l">
+    <div class="quiz-top" data-page-node-id="nsQrskCi6ND8ZTMG7gkEpK">
+      <button class="btn small" id="btn-quiz-exit" data-page-node-id="r8MKf4CyhU6lWuQqYrreiF">退出</button>
+      <div class="row" data-page-node-id="pj5TJxm5f7quPTgeuAIhwF">
+        <button class="btn small" id="btn-sound" title="答题音效开关">🔊</button>
+        <span class="muted" id="quiz-mode" data-page-node-id="Jqg0nroXmeJcgYeNNoU0lR"></span>
+        <span class="timer" id="quiz-timer" data-page-node-id="WseFwqCFdaBp8NV8vdeEJC">00:00</span>
+      </div>
+    </div>
+    <div class="progress-wrap" data-page-node-id="P54HXpd1qErkEi3h3xg1dU"><div class="progress-bar" id="quiz-progress" data-page-node-id="NPoB3bjP2X1srEZkEIzz40"></div><div class="runner" id="quiz-runner"><svg viewBox="0 0 40 32" width="36" height="32"><ellipse cx="26" cy="7.5" rx="2.6" ry="7" fill="#ffffff" stroke="#c9b8e8" transform="rotate(-14 26 7.5)"/><ellipse cx="32.5" cy="8.5" rx="2.5" ry="6.2" fill="#ffd9e3" stroke="#c9b8e8" transform="rotate(10 32.5 8.5)"/><ellipse cx="16.5" cy="20.5" rx="10.5" ry="6.8" fill="#ffffff" stroke="#c9b8e8"/><circle cx="29.5" cy="16.5" r="6.6" fill="#ffffff" stroke="#c9b8e8"/><circle cx="6" cy="18.5" r="3" fill="#ffffff" stroke="#c9b8e8"/><circle cx="32" cy="15.5" r="1.3" fill="#312e81"/><circle cx="27.5" cy="14.8" r="1" fill="#312e81"/><ellipse cx="34" cy="19" rx="1.7" ry="1.1" fill="#fbcfe8"/><ellipse cx="14" cy="26.5" rx="3.2" ry="2" fill="#f5f3ff" stroke="#c9b8e8"/><ellipse cx="21" cy="26.5" rx="3.2" ry="2" fill="#f5f3ff" stroke="#c9b8e8"/><path d="M35.5 16.5 L38 15.5" stroke="#c9b8e8" stroke-width="1.4" stroke-linecap="round"/></svg></div></div>
+    <div class="quiz-nav" id="quiz-nav" data-page-node-id="VwjytKSvbf9Rg26KxxX1HY"></div>
+    <div class="card" data-page-node-id="89hJptNgrpRtkyj5SD1OhF">
+      <div class="muted" id="quiz-index" data-page-node-id="K1yqMtTyCjGjoDqkoWyGYz"></div>
+      <div class="stem" id="quiz-stem" data-page-node-id="uQBAedCOskrGpRbSOkeeLS"></div>
+      <div id="quiz-options" data-page-node-id="GHJf3S7oGLQooacsCXJcKL"></div>
+      <div id="quiz-feedback" data-page-node-id="feaYRaEqR2AdFVz0mPlgh1"></div>
+      <div id="quiz-explain" data-page-node-id="svLd1G9N53qEvDYSCXVGb7"></div>
+      <div class="quiz-footer" data-page-node-id="3tffDR82BTgv1c5pNm7SgX">
+        <button class="btn" id="btn-prev" data-page-node-id="MeE5BA0312MQy8r5D1Sgqp">上一题</button>
+        <button class="btn primary" id="btn-next" data-page-node-id="RT8qDxEZIsKDlPrO3mB9gy">下一题</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 错题本 -->
+  <section id="view-wrong" hidden data-page-node-id="18yREOhwvvjAX4x6DZNUHL">
+    <div class="card" data-page-node-id="C2vlcHCICUTggqZfZPIvEW">
+      <div class="row between" data-page-node-id="yJ9z7cgRhmbsMM2LdCxBft">
+        <h2 data-page-node-id="CMfjCGEGWlli01KbSry3Gb">错题本</h2>
+        <button class="btn small primary" id="btn-repractice-all" data-page-node-id="na72DKqCLdABa1cUOd2KBi">重练全部错题</button>
+      </div>
+      <div id="wrong-list" data-page-node-id="81OjYdHnoy4E5ob1QgEzAh"></div>
+    </div>
+  </section>
+
+  <!-- 历史 -->
+  <section id="view-history" hidden data-page-node-id="Ck0iHhkyaWxTjEliQkPDTR">
+    <div class="card" data-page-node-id="rfbyyrAMyJucqRS0TGUbbQ">
+      <div class="row between" data-page-node-id="4RpZALroYjifPdXjHjKUQG">
+        <h2 data-page-node-id="SQQBa40XDaPmWrtnokYznN">答题历史</h2>
+        <button class="btn small danger" id="btn-clear-history" data-page-node-id="1uN5FqEirgjKCaNpKZuxy6">清空历史</button>
+      </div>
+      <div id="history-list" data-page-node-id="feqV4Y35h7aIMdauIukjjv"></div>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs bottom-tabs" id="bottom-tabs" data-page-node-id="1COcWN9D8f7aK3eS9tbZD9">
+  <button data-view="home" class="active" data-page-node-id="lQcwcPZpNzLWTXVIMeJSYR"><span class="ico" data-page-node-id="YzpMRsfNKaOF8MykDvaiUr">📚</span>题库</button>
+  <button data-view="wrong" data-page-node-id="xlfVpDl45pl5sKqhxoNAGh"><span class="ico" data-page-node-id="XEkyG6P3lLKU92fTwAFZnH">📕</span>错题本</button>
+  <button data-view="history" data-page-node-id="Xt6HT5obP9HOn8jkdxkxxA"><span class="ico" data-page-node-id="BuswZIRibA7jXWkjmFrt7A">🕘</span>历史</button>
+</nav>
+
+<!-- 开卷设置弹窗 -->
+<div class="modal-mask" id="modal-start" hidden data-page-node-id="UjIOXaSTbG2erD51tNFU2S">
+  <div class="modal" data-page-node-id="fnCjhBZKk1BJmaS2Zax6hw">
+    <h3 data-page-node-id="qAbyw6yNug0OLIsLsV0yan">开始答题</h3>
+    <div class="muted" id="start-bank-name" data-page-node-id="ANv3ePhET1733nHi2XNv1Q"></div>
+    <label class="f" data-page-node-id="da8h5dQijfJ6Y2ruWl3o70">本次答题数量</label>
+    <div class="count-chips" id="count-chips" data-page-node-id="XFP3DgAf0LiRHaJKZjyboz"></div>
+    <div class="radio-line" id="custom-count-line" hidden data-page-node-id="o8JNAkUBM5aJFYfPSCFfeU">
+      <span data-page-node-id="1lZA0rlIUIFH9sRgBcM3l3">自定义</span>
+      <input type="number" id="custom-count" min="1" style="width:90px;" value="10" data-page-node-id="K14ZadEOZdk3vkOsfDFCZo"> 题
+    </div>
+    <label class="f" data-page-node-id="IBk2KvkhQhy18DLBRghtTx">出题顺序</label>
+    <div class="count-chips" id="order-chips" data-page-node-id="DHzCmsbfvjM7Q4A5Q6LFoX">
+      <button class="chip active" data-order="seq" data-page-node-id="XlJNlziXAOCwf4MXznrmCr">顺序出题</button>
+      <button class="chip" data-order="rand" data-page-node-id="jKg5lBnXTbjpqlqbjlbH1w">随机打乱</button>
+    </div>
+    <div class="modal-actions" data-page-node-id="saPwfnC2OSQjORt640HYDH">
+      <button class="btn" data-close data-page-node-id="R8QnKac4ZC9SGu6z0JGVl4">取消</button>
+      <button class="btn primary" id="btn-begin" data-page-node-id="6HUDT9EMT2QgEZI4w1ARdi">开始答题</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新建/重命名题库 -->
+<div class="modal-mask" id="modal-bankname" hidden data-page-node-id="BLVaJckUs7vXrkhG6tDwty">
+  <div class="modal" data-page-node-id="RCYB2pSXq2U8qEItR0gDrt">
+    <h3 id="bankname-title" data-page-node-id="6KBPKnJORd3pZePmXdTNCv">新建题库</h3>
+    <label class="f" data-page-node-id="Zj35nn5gzyygSIBzc5RChV">题库名称</label>
+    <input type="text" id="input-bankname" maxlength="30" placeholder="例如：计算机基础练习" data-page-node-id="2QDCy74IBYl3gSMb4uu4Fq">
+    <div class="modal-actions" data-page-node-id="I1T41SHPwD0n5u7Cs1tn4e">
+      <button class="btn" data-close data-page-node-id="xl6XVs7WFjbTAM0wXc0gIN">取消</button>
+      <button class="btn primary" id="btn-save-bankname" data-page-node-id="hXy9UIuJdFO3DgumVTzw43">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 添加/编辑题目 -->
+<div class="modal-mask" id="modal-question" hidden data-page-node-id="1hn7z29uvSOsJ63yxsjb5P">
+  <div class="modal" data-page-node-id="27ewzr8Hty5NCzWCLCDTS2">
+    <h3 id="question-title" data-page-node-id="rTbhYEOmbuRYNzu1aq3HCu">添加题目</h3>
+    <label class="f" data-page-node-id="Bukmg0HlRkIneIneigATIW">题干</label>
+    <textarea id="input-stem" placeholder="请输入题目内容"></textarea>
+    <label class="f" data-page-node-id="GBEC0o0HKKa9H81fZb6hSN">四个选项（点选圆圈标记正确答案）</label>
+    <form id="opt-form" data-page-node-id="0x7IXXpLfp7WwZqmRbhbmy">
+      <div class="opt-line" data-page-node-id="ymsDcBphDUiHytW0iZfefS"><input type="radio" name="ans" value="0" checked data-page-node-id="GkniETlEDXUzMGRUUXsZlV"><input type="text" class="opt-input" placeholder="选项 A" data-page-node-id="veTHeSyn4gYnsQqauQ3RSc"></div>
+      <div class="opt-line" data-page-node-id="vScOCtTBXHkj3Cte9vkSuD"><input type="radio" name="ans" value="1" data-page-node-id="oYLZyGLjVsFie19v3GBfIS"><input type="text" class="opt-input" placeholder="选项 B" data-page-node-id="4EBM4bDcq9eWD41vKhidGL"></div>
+      <div class="opt-line" data-page-node-id="ZMj60aM2Tot3fMOSxb3d9P"><input type="radio" name="ans" value="2" data-page-node-id="I5QtHP355est2PKZ0LeBNo"><input type="text" class="opt-input" placeholder="选项 C" data-page-node-id="JzuVuq8kcxHDDOs0bhMabj"></div>
+      <div class="opt-line" data-page-node-id="DwgCM68MBku8qOVTSZLiBH"><input type="radio" name="ans" value="3" data-page-node-id="5DQH8bIsvRCUDy5wjXOvRU"><input type="text" class="opt-input" placeholder="选项 D" data-page-node-id="aiKmoXv1yMcPAXrSABZJKX"></div>
+    </form>
+    <label class="f" data-page-node-id="HwZMMBqSTfh7artMBxKqDj">解析（可选）</label>
+    <textarea id="input-explain" placeholder="答完题后会展示给答题人"></textarea>
+    <div class="modal-actions" data-page-node-id="bECRDyHMHflVVENZFR22mu">
+      <button class="btn" data-close data-page-node-id="fjswd8LKRZFaj7NANeTysO">取消</button>
+      <button class="btn primary" id="btn-save-question" data-page-node-id="3fjwD5PCtZ2cOiKB9WtwrU">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 通用确认 -->
+<div class="modal-mask" id="modal-confirm" hidden data-page-node-id="y3mfqMbprkfCyxU1CGBFtQ">
+  <div class="modal" data-page-node-id="UZP65pLOPLC5ruQ8TW9N3N">
+    <h3 id="confirm-title" data-page-node-id="CdCBPX0OlbYImGHkwrJBFD">确认</h3>
+    <p id="confirm-text" style="font-size:14px; line-height:1.6;" data-page-node-id="hqNUF5CfPUwmvZs0eYDgJb"></p>
+    <div class="modal-actions" data-page-node-id="mS55MK3IsniAS5CvYgO7fM">
+      <button class="btn" data-close data-page-node-id="ueunxYVcd58DWdPUNFSkij">取消</button>
+      <button class="btn danger" id="btn-confirm-ok" data-page-node-id="ZPVjgV6nwHkeaJpG8Ovdv0">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 结算 -->
+<div class="modal-mask" id="modal-settle" hidden data-page-node-id="AFQMkHIXEvPZI83wCrCKyj">
+  <div class="modal" data-page-node-id="9W6Tj5nmD6wuoqxDreTd6E">
+    <h3 id="settle-title" data-page-node-id="JyHFeRWO5sPnFNwSGPlRCR">答题结算</h3>
+    <div class="muted" id="settle-bank" data-page-node-id="EnLHU5d0wHHlYun6kz6oSb"></div>
+    <div class="settle-stats" data-page-node-id="adQBPLTW6fINPntk7DUiby">
+      <div class="s" data-page-node-id="uuFDWmzySSPp9hfnmJPjIy"><div class="num" id="settle-total" data-page-node-id="Et8ALFXJH2OrGUGIWAQOOQ">0</div><div class="lbl" data-page-node-id="ioqq6q6EZI2Uya4nZhcmkw">总题数</div></div>
+      <div class="s" data-page-node-id="YYfGkTzLQsey0xWG6uGHaQ"><div class="num ok" id="settle-correct" data-page-node-id="JXVeVkCqq61M6R2Lo6PlXb">0</div><div class="lbl" data-page-node-id="zwUAjB6KFdTBylx52nhKWO">答对</div></div>
+      <div class="s" data-page-node-id="ILkVSELV8TCKbjjEHsdRyV"><div class="num" id="settle-acc" data-page-node-id="FHBuo9D5h3WH3B7hbNt1Ob">0%</div><div class="lbl" data-page-node-id="FeHBAQBJ3PyP3EveIsrLD4">正确率</div></div>
+      <div class="s" data-page-node-id="BHyIticsVgubqAD5IiSTbS"><div class="num" id="settle-time" data-page-node-id="pnLFBCSZqVCkEoBAh5V60l">0:00</div><div class="lbl" data-page-node-id="lehmFOte2qlTaH5UECgwgb">用时</div></div>
+    </div>
+    <div class="modal-actions" data-page-node-id="VMRocDdi7bzYknwVRMmy95">
+      <button class="btn" id="btn-settle-wrong" data-page-node-id="qFIZzHF6qvAwyqbMOi82UM">查看错题</button>
+      <button class="btn" id="btn-settle-again" data-page-node-id="5t508utMhURN6XjiyKwngU">再来一次</button>
+      <button class="btn primary" id="btn-settle-home" data-page-node-id="IngSlwVGxdTeCKYi2BEhPm">返回题库</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ================= 工具 ================= */
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
+function fmtTime(sec){var m=Math.floor(sec/60),s=sec%60;return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;}
+function fmtDur(sec){var m=Math.floor(sec/60),s=sec%60;return m+"分"+(s<10?"0":"")+s+"秒";}
+function fmtDate(ts){var d=new Date(ts);function p(n){return n<10?"0"+n:n;}return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());}
+var LETTERS=["A","B","C","D"];
+var uid=(function(){var i=1;return function(){return i++;};})();
+
+/* ================= IndexedDB（不可用时自动降级） ================= */
+var storageOK=true,dbPromise=null;
+function openDB(){
+  try{
+    if(!window.indexedDB)throw new Error("indexedDB 不可用");
+    return new Promise(function(res,rej){
+      var r=indexedDB.open("quizApp",1);
+      r.onupgradeneeded=function(e){
+        var db=e.target.result;
+        db.createObjectStore("banks",{keyPath:"id",autoIncrement:true});
+        db.createObjectStore("records",{keyPath:"id",autoIncrement:true});
+        db.createObjectStore("wrongBook",{keyPath:"id",autoIncrement:true});
+      };
+      r.onsuccess=function(){res(r.result);};
+      r.onerror=function(){rej(r.error);};
+    });
+  }catch(e){
+    storageOK=false;
+    return Promise.resolve(null);
+  }
+}
+/* 降级存储：优先 localStorage，被禁用则仅内存（本次会话有效） */
+var shim={banks:[],records:[],wrongBook:[]},shimNext={banks:1,records:1,wrongBook:1};
+function shimLoad(){try{var s=localStorage.getItem("quizAppShim");if(s)shim=JSON.parse(s);}catch(e){}}
+function shimSave(){try{localStorage.setItem("quizAppShim",JSON.stringify(shim));}catch(e){}}
+function dbAll(store){if(!storageOK){return Promise.resolve(shim[store].slice());}return dbPromise.then(function(db){return new Promise(function(res,rej){var req=db.transaction(store,"readonly").objectStore(store).getAll();req.onsuccess=function(){res(req.result);};req.onerror=function(){rej(req.error);};});});}
+function dbGet(store,key){if(!storageOK){return Promise.resolve(shim[store].find(function(x){return x.id===key;}));}return dbPromise.then(function(db){return new Promise(function(res,rej){var req=db.transaction(store,"readonly").objectStore(store).get(key);req.onsuccess=function(){res(req.result);};req.onerror=function(){rej(req.error);};});});}
+function dbPut(store,val){if(!storageOK){var i=shim[store].findIndex(function(x){return x.id===val.id;});if(i>=0)shim[store][i]=val;else shim[store].push(val);shimSave();return Promise.resolve(val.id);}return dbPromise.then(function(db){return new Promise(function(res,rej){var req=db.transaction(store,"readwrite").objectStore(store).put(val);req.onsuccess=function(){res(req.result);};req.onerror=function(){rej(req.error);};});});}
+function dbAdd(store,val){if(!storageOK){val.id=shimNext[store]++;shim[store].push(val);shimSave();return Promise.resolve(val.id);}return dbPromise.then(function(db){return new Promise(function(res,rej){var req=db.transaction(store,"readwrite").objectStore(store).add(val);req.onsuccess=function(){res(req.result);};req.onerror=function(){rej(req.error);};});});}
+function dbDel(store,key){if(!storageOK){shim[store]=shim[store].filter(function(x){return x.id!==key;});shimSave();return Promise.resolve();}return dbPromise.then(function(db){return new Promise(function(res,rej){var req=db.transaction(store,"readwrite").objectStore(store).delete(key);req.onsuccess=function(){res();};req.onerror=function(){rej(req.error);};});});}
+function dbClear(store){if(!storageOK){shim[store]=[];shimSave();return Promise.resolve();}return dbPromise.then(function(db){return new Promise(function(res,rej){var req=db.transaction(store,"readwrite").objectStore(store).clear();req.onsuccess=function(){res();};req.onerror=function(){rej(req.error);};});});}
+function dbDelWhere(store,pred){
+  if(!storageOK){shim[store]=shim[store].filter(function(x){return !pred(x);});shimSave();return Promise.resolve();}
+  return dbPromise.then(function(db){
+    return new Promise(function(res,rej){
+      var req=db.transaction(store,"readwrite").objectStore(store).openCursor();
+      req.onsuccess=function(e){
+        var c=e.target.result;
+        if(c){if(pred(c.value))c.delete();c.continue();}else res();
+      };
+      req.onerror=function(){rej(req.error);};
+    });
+  });
+}
+
+/* ================= 内置题库 ================= */
+var BUILTIN=[
+ {name:"单元1 认识计算机网络（内置）",key:"unit1-network",questions:[
+  {stem:"将分布在不同地理位置的具有独立功能的多台计算机及其外部设备，利用通信设备和线路连接起来，实现资源共享和信息传递的系统称为（　）。",options:["计算机系统","计算机网络","通信系统","分布式数据库"],answer:1,explanation:"计算机网络定义：分布在不同地理位置、具有独立功能的多台计算机及外部设备，利用通信设备和线路连接起来，用网络软件实现资源共享和信息传递。"},
+  {stem:"现代计算机网络最主要的功能是（　）。",options:["数据通信","分布式处理","资源共享","提高可靠性"],answer:2,explanation:"计算机网络四大功能：资源共享、数据通信、分布式处理、提高可靠性和可用性，其中资源共享是最主要的功能。"},
+  {stem:"计算机网络是（　）相结合的产物。",options:["计算机技术与通信技术","硬件技术与软件技术","电子技术与机械技术","电视技术与广播技术"],answer:0,explanation:"计算机网络是现代计算机技术和通信技术相结合的产物。"},
+  {stem:"网络通信协议是指（　）。",options:["一种网络传输介质","一系列规则和约定的规范性描述，定义设备间通信的标准","一种网络操作系统","网络硬件设备的安装说明书"],answer:1,explanation:"网络通信协议是一系列规则和约定的规范性描述，定义了设备间通信的标准，实现从互连到互通。"},
+  {stem:"ARPANet 诞生于（　）年，它的出现标志着计算机网络的兴起。",options:["1969","1977","1984","1994"],answer:0,explanation:"1969 年美国国防部高级研究计划局建立 ARPANet，它是现代网络和 Internet 的雏形。"},
+  {stem:"1984 年正式颁布开放系统互连参考模型（OSI）的国际组织是（　）。",options:["IEEE","CCITT","ISO","ANSI"],answer:2,explanation:"1984 年，国际标准化组织（ISO）正式颁布了 OSI 参考模型，被认为是新一代计算机网络体系结构的基础。"},
+  {stem:"计算机网络发展过程经历的第一个阶段是（　）。",options:["具有远程通信功能的多机系统","以资源共享为目的的开放标准化计算机网络","具有远程通信功能的单主机系统","无线移动网络"],answer:2,explanation:"三个阶段：①具有远程通信功能的单主机系统；②具有远程通信功能的多机系统；③以资源共享为目的的开放标准化计算机网络。"},
+  {stem:"1987 年 9 月 14 日，我国通过 Internet 向全世界发出了第一封电子邮件，这标志着（　）。",options:["中国正式接入 Internet","中国人使用互联网的序幕揭开","CNNIC 成立","中国建成 Internet 主干网"],answer:1,explanation:"1987 年 9 月 14 日北京计算机应用技术研究所发出第一封电子邮件，揭开了中国人使用互联网的序幕；1994 年 4 月 20 日 NCFC 才正式接入 Internet。"},
+  {stem:"1994 年 4 月 20 日正式接入 Internet 的中国网络设施是（　）。",options:["CHINANET","CERNET","NCFC","CMNET"],answer:2,explanation:"1994 年 4 月 20 日，以中科院、北大和清华为核心的中国国家计算机网络设施（NCFC）正式接入 Internet，当时速率只有 64kbit/s。"},
+  {stem:"在计算机网络中，为用户提供网络服务、是网络资源管理和共享核心的设备是（　）。",options:["工作站","服务器","集线器","终端"],answer:1,explanation:"服务器是网络资源管理和共享的核心，为用户提供网络服务，其性能对整个网络的资源共享起决定性影响。"},
+  {stem:"最主要的网络软件是（　），它负责管理网络中各种软硬件资源。",options:["网络应用软件","网络管理软件","网络操作系统","浏览器软件"],answer:2,explanation:"网络操作系统是最主要的网络软件，负责管理网络中各种软硬件资源。"},
+  {stem:"下列关于 Linux 操作系统的说法，正确的是（　）。",options:["是美国贝尔实验室开发的商业操作系统","是自由软件，源代码开放、免费","是 Novell 公司开发的局域网操作系统","主要使用 IPX/SPX 协议通信"],answer:1,explanation:"Linux 是自由软件（源代码开放），特点是免费、系统资源需求低、网络功能强、稳定性安全性高；UNIX 是贝尔实验室开发，NetWare 是 Novell 公司开发且使用 IPX/SPX 协议。"},
+  {stem:"作用距离约为 5~50 公里的网络属于（　）。",options:["局域网（LAN）","城域网（MAN）","广域网（WAN）","对等网"],answer:1,explanation:"按覆盖范围：局域网局限在较小范围，城域网作用距离约 5~50 公里，广域网范围为几十到几千公里。"},
+  {stem:"学校机房中几十台计算机连成一个网络，这种网络按覆盖范围分类属于（　）。",options:["广域网","城域网","局域网","互联网"],answer:2,explanation:"局域网（LAN）局限在较小的范围内，如校园网、机房网络。"},
+  {stem:"计算机网络的拓扑结构设计，是设计计算机网络的（　）。",options:["最后一步","第一步","中间环节","无关紧要的环节"],answer:1,explanation:"一般情况下网络的拓扑结构指物理拓扑结构，拓扑结构设计是设计计算机网络的第一步。"},
+  {stem:"星型拓扑结构的缺点是（　）。",options:["局部结点故障会造成全网瘫痪","中心结点负担过重，容易成为网络瓶颈","信号随传输距离衰减且总线长度有限","延时固定但实时性差"],answer:1,explanation:"星型拓扑以中央处理设备为核心，所有数据必须经过它，因此中心结点负担过重、容易成为瓶颈，且通信线路工程量和费用较大。"},
+  {stem:"在（　）拓扑结构中，一个结点或线路发生故障就会造成整个网络的瘫痪。",options:["星型","总线型","环型","网状"],answer:2,explanation:"环型拓扑各节点首尾相接成封闭环形，信息沿环按顺序传递，可靠性低，一个结点或线路故障会造成全网瘫痪。"},
+  {stem:"链路冗余、可靠性高，是广域网特别是 Internet 中常用的拓扑结构是（　）。",options:["总线型拓扑","树型拓扑","环型拓扑","网状拓扑"],answer:3,explanation:"网状拓扑链路冗余、可靠性高、灵活性好，但结构复杂、成本高，常用于通信骨干网及 Internet。"},
+  {stem:"客户机/服务器（C/S）网络中，正确的说法是（　）。",options:["服务器请求服务，客户机提供服务","服务器提供服务，客户机请求服务","两者既提供服务又请求服务","两者地位完全平等"],answer:1,explanation:"C/S 结构中服务器提供服务、不请求服务，客户机请求服务、不提供服务；两者地位平等无主从之分的是对等网络。"},
+  {stem:"对等网络（Peer to Peer）的特点是（　）。",options:["必须有一台高性能服务器","各计算机地位平等，没有客户机和服务器之分","是最复杂、最昂贵的网络形式","性能完全取决于服务器性能"],answer:1,explanation:"对等网是早期也是最简单的网络形式，也称工作组网络，各计算机地位平等，没有客户机和服务器之分。"},
+  {stem:"网络带宽的单位通常表示为（　）。",options:["赫兹（Hz）","比特每秒（bit/s）","字节（Byte）","瓦特（W）"],answer:1,explanation:"带宽可描述为每秒传送多少比特，单位是 bit/s 或 bps，如 100M 宽带即 100Mbit/s。换算关系为 1Gbit/s=10³Mbit/s。"},
+  {stem:"时延中，报文长度较大时的主要矛盾是（　），报文长度较小时的主要矛盾是（　）。",options:["发送时延；传播时延","传播时延；发送时延","处理时延；排队时延","排队时延；处理时延"],answer:0,explanation:"时延包括发送、传播、处理、排队时延。报文长度较大时发送时延是主要矛盾，报文长度较小时传播时延是主要矛盾。"},
+  {stem:"表示单位时间内通过某个网络（或信道、接口）的数据量、常用于实测网络的性能指标是（　）。",options:["带宽","时延","吞吐量","误码率"],answer:2,explanation:"吞吐量（throughput）表示单位时间内通过某个网络的数据量，是对现实网络的一种测量，受带宽或额定速率限制。"},
+  {stem:"关于互连和互联的说法，正确的是（　）。",options:["互连强调逻辑互通，互联强调物理连接","互连强调物理连接，互联强调用协议及软件实现逻辑互通","两者完全相同可随意互换","互联不需要协议软件参与"],answer:1,explanation:"互连指用通信介质将节点进行物理连接；互联是在物理互连基础上，用协议及软件实现各节点的逻辑互通。"}
+ ]}
+];
+</script>
+<script>
+"use strict";
+/* ================= 全局状态 ================= */
+var banks=[],records=[],wrongs=[];
+var curBankId=null;
+var quiz=null; // 进行中的答题会话
+var startCtx=null; // 开卷设置上下文 {bankId, count, order, fromWrong}
+
+/* ================= 视图切换 ================= */
+var VIEWS=["home","bank","quiz","wrong","history"];
+function showView(name){
+  VIEWS.forEach(function(v){document.getElementById("view-"+v).hidden=(v!==name);});
+  document.querySelectorAll("nav.tabs button").forEach(function(b){
+    b.classList.toggle("active",b.dataset.view===name || (name==="bank"&&b.dataset.view==="home"));
+  });
+  document.getElementById("bottom-tabs").style.display=(name==="quiz")?"none":"";
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("nav.tabs button[data-view]").forEach(function(b){
+  b.addEventListener("click",function(){showView(b.dataset.view);if(b.dataset.view==="wrong")renderWrong();if(b.dataset.view==="history")renderHistory();if(b.dataset.view==="home")renderBanks();});
+});
+
+/* ================= 弹窗 ================= */
+function openModal(id){document.getElementById(id).hidden=false;}
+function closeModal(id){document.getElementById(id).hidden=true;}
+document.querySelectorAll(".modal-mask").forEach(function(m){
+  m.addEventListener("click",function(e){
+    if(e.target===m && m.id!=="modal-settle" && m.id!=="modal-exit")m.hidden=true;
+  });
+  m.querySelectorAll("[data-close]").forEach(function(b){b.addEventListener("click",function(){m.hidden=true;});});
+});
+var confirmCb=null;
+function askConfirm(title,text,cb){
+  document.getElementById("confirm-title").textContent=title;
+  document.getElementById("confirm-text").textContent=text;
+  confirmCb=cb;openModal("modal-confirm");
+}
+document.getElementById("btn-confirm-ok").addEventListener("click",function(){
+  closeModal("modal-confirm");
+  if(confirmCb)confirmCb();
+});
+
+/* ================= 首页：题库 ================= */
+function renderBanks(){
+  var box=document.getElementById("bank-list");
+  if(!banks.length){box.innerHTML='<div class="empty">还没有题库，点击右上角导入或新建</div>';return;}
+  box.innerHTML=banks.map(function(b){
+    return '<div class="q-item bank-item">'+
+      '<div class="info" data-open="'+b.id+'" style="cursor:pointer;">'+
+        '<div class="name">'+esc(b.name)+(b.builtin?'<span class="tag">内置</span>':'')+'</div>'+
+        '<div class="muted">'+b.questions.length+' 道单选题</div>'+
+      '</div>'+
+      '<div class="row">'+
+        '<button class="btn small primary" data-start="'+b.id+'">开始答题</button>'+
+        '<button class="btn small" data-detail="'+b.id+'">管理题目</button>'+
+      '</div>'+
+    '</div>';
+  }).join("");
+  box.querySelectorAll("[data-open]").forEach(function(el){el.addEventListener("click",function(){openBank(+el.dataset.open);});});
+  box.querySelectorAll("[data-start]").forEach(function(el){el.addEventListener("click",function(e){e.stopPropagation();openStart(+el.dataset.start);});});
+  box.querySelectorAll("[data-detail]").forEach(function(el){el.addEventListener("click",function(e){e.stopPropagation();openBank(+el.dataset.detail);});});
+}
+document.getElementById("btn-newbank").addEventListener("click",function(){
+  document.getElementById("bankname-title").textContent="新建题库";
+  document.getElementById("input-bankname").value="";
+  openModal("modal-bankname");
+  pendingRename=null;
+});
+var pendingRename=null;
+document.getElementById("btn-rename").addEventListener("click",function(){
+  var b=banks.find(function(x){return x.id===curBankId;});if(!b)return;
+  document.getElementById("bankname-title").textContent="重命名题库";
+  document.getElementById("input-bankname").value=b.name;
+  pendingRename=b.id;openModal("modal-bankname");
+});
+document.getElementById("btn-save-bankname").addEventListener("click",function(){
+  var name=document.getElementById("input-bankname").value.trim();
+  if(!name){alert("请填写题库名称");return;}
+  if(pendingRename){
+    var b=banks.find(function(x){return x.id===pendingRename;});
+    b.name=name;dbPut("banks",b).then(function(){closeModal("modal-bankname");openBank(pendingRename);});
+  }else{
+    dbAdd("banks",{name:name,createdAt:Date.now(),questions:[]}).then(function(id){
+      closeModal("modal-bankname");loadAll().then(function(){openBank(id);});
+    });
+  }
+});
+document.getElementById("btn-bank-back").addEventListener("click",function(){curBankId=null;showView("home");renderBanks();});
+document.getElementById("btn-delbank").addEventListener("click",function(){
+  var b=banks.find(function(x){return x.id===curBankId;});if(!b)return;
+  askConfirm("删除题库","确定删除题库「"+b.name+"」及其全部 "+b.questions.length+" 道题？该操作不可恢复。",function(){
+    dbDel("banks",b.id).then(function(){
+      return dbDelWhere("wrongBook",function(w){return w.bankId===b.id;});
+    }).then(function(){
+      curBankId=null;return loadAll();
+    }).then(function(){showView("home");renderBanks();});
+  });
+});
+
+/* ================= 题库详情 ================= */
+function openBank(id){
+  curBankId=id;showView("bank");renderBankDetail();
+}
+function renderBankDetail(){
+  var b=banks.find(function(x){return x.id===curBankId;});
+  if(!b){showView("home");renderBanks();return;}
+  document.getElementById("bank-title").textContent=b.name;
+  document.getElementById("bank-count").textContent="共 "+b.questions.length+" 道题。单选题固定 4 个选项，录入时点选圆圈标记正确答案。";
+  var box=document.getElementById("question-list");
+  if(!b.questions.length){box.innerHTML='<div class="empty">本题库还没有题目，点击「添加题目」开始录入</div>';return;}
+  box.innerHTML=b.questions.map(function(q,i){
+    return '<div class="q-item">'+
+      '<div class="row between"><div class="q-stem">'+(i+1)+". "+esc(q.stem)+'</div>'+
+      '<div class="row"><button class="btn small" data-edit="'+i+'">编辑</button>'+
+      '<button class="btn small danger" data-delq="'+i+'">删除</button></div></div>'+
+      '<div class="q-opts">'+q.options.map(function(o,j){return LETTERS[j]+". "+esc(o);}).join("　　")+'</div>'+
+      '<div class="q-ans">正确答案：<b class="ok">'+LETTERS[q.answer]+'</b>'+(q.explanation?'<span class="muted">（有解析）</span>':'')+'</div>'+
+    '</div>';
+  }).join("");
+  box.querySelectorAll("[data-edit]").forEach(function(el){el.addEventListener("click",function(){openQuestionModal(+el.dataset.edit);});});
+  box.querySelectorAll("[data-delq]").forEach(function(el){el.addEventListener("click",function(){
+    var i=+el.dataset.delq;
+    askConfirm("删除题目","确定删除第 "+(i+1)+" 题？",function(){
+      b.questions.splice(i,1);dbPut("banks",b).then(renderBankDetail);
+    });
+  });});
+}
+document.getElementById("btn-addq").addEventListener("click",function(){openQuestionModal(-1);});
+var editQIndex=-1;
+function openQuestionModal(idx){
+  var b=banks.find(function(x){return x.id===curBankId;});if(!b)return;
+  editQIndex=idx;
+  document.getElementById("question-title").textContent=(idx<0?"添加题目":"编辑第 "+(idx+1)+" 题");
+  var stem=document.getElementById("input-stem"),exp=document.getElementById("input-explain");
+  var inputs=document.querySelectorAll("#opt-form .opt-input");
+  var radios=document.querySelectorAll("#opt-form input[name=ans]");
+  if(idx<0){
+    stem.value="";exp.value="";
+    inputs.forEach(function(i){i.value="";});radios[0].checked=true;
+  }else{
+    var q=b.questions[idx];
+    stem.value=q.stem;exp.value=q.explanation||"";
+    q.options.forEach(function(o,j){inputs[j].value=o;});
+    radios[q.answer].checked=true;
+  }
+  openModal("modal-question");
+}
+document.getElementById("btn-save-question").addEventListener("click",function(){
+  var b=banks.find(function(x){return x.id===curBankId;});if(!b)return;
+  var stem=document.getElementById("input-stem").value.trim();
+  var inputs=document.querySelectorAll("#opt-form .opt-input");
+  var options=[];for(var i=0;i<4;i++){var v=inputs[i].value.trim();if(!v){alert("第 "+LETTERS[i]+" 选项不能为空");return;}options.push(v);}
+  var answer=+document.querySelector("#opt-form input[name=ans]:checked").value;
+  var explanation=document.getElementById("input-explain").value.trim();
+  if(!stem){alert("请填写题干");return;}
+  var q={stem:stem,options:options,answer:answer,explanation:explanation};
+  if(editQIndex<0)b.questions.push(q);else b.questions[editQIndex]=q;
+  dbPut("banks",b).then(function(){closeModal("modal-question");renderBankDetail();});
+});
+
+/* ================= 导入 / 模板 ================= */
+document.getElementById("btn-import").addEventListener("click",function(){document.getElementById("file-import").click();});
+document.getElementById("file-import").addEventListener("change",function(e){
+  var f=e.target.files[0];if(!f)return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    var data;
+    try{data=JSON.parse(reader.result);}catch(err){alert("文件不是合法的 JSON，导入失败");return;}
+    /* 兼容两种格式：单套题库对象 {name,questions} 或多套题库数组 [{name,questions},...] */
+    var items=Array.isArray(data)?data:[data];
+    var okBanks=[],skipInfo=[];
+    items.forEach(function(item,bi){
+      if(!item||!Array.isArray(item.questions)||!item.questions.length)return;
+      var valid=[],skipped=[];
+      item.questions.forEach(function(q,i){
+        if(q&&typeof q.stem==="string"&&q.stem.trim()&&Array.isArray(q.options)&&q.options.length===4&&
+           q.options.every(function(o){return typeof o==="string"&&o.trim();})&&
+           Number.isInteger(q.answer)&&q.answer>=0&&q.answer<=3){
+          valid.push({stem:q.stem.trim(),options:q.options.map(function(o){return o.trim();}),answer:q.answer,explanation:(q.explanation||"").toString()});
+        }else skipped.push(i+1);
+      });
+      if(!valid.length)return;
+      var name=(typeof item.name==="string"&&item.name.trim())?item.name.trim():(items.length>1?"导入题库"+(bi+1):f.name.replace(/\.json$/i,""));
+      okBanks.push({name:name,questions:valid});
+      if(skipped.length)skipInfo.push("「"+name+"」跳过不合规题号："+skipped.join("、"));
+    });
+    if(!okBanks.length){alert("没有可导入的合规题目，请检查 JSON 格式");return;}
+    var dupNames=okBanks.filter(function(nb){return banks.some(function(b){return b.name===nb.name;});}).map(function(nb){return "「"+nb.name+"」";});
+    function doImport(){
+      var chain=Promise.resolve();
+      okBanks.forEach(function(nb){
+        chain=chain.then(function(){
+          var ex=banks.find(function(b){return b.name===nb.name;});
+          if(ex){ex.questions=nb.questions;return dbPut("banks",ex);}
+          return dbAdd("banks",{name:nb.name,createdAt:Date.now(),questions:nb.questions});
+        });
+      });
+      chain.then(function(){
+        loadAll().then(function(){
+          renderBanks();showView("home");
+          var msg="导入成功："+okBanks.map(function(nb){return "「"+nb.name+"」"+nb.questions.length+" 题";}).join("，")+"。";
+          if(skipInfo.length)msg+="\n"+skipInfo.join("\n");
+          alert(msg);
+        });
+      });
+    }
+    if(dupNames.length)askConfirm("覆盖确认","已存在同名题库："+dupNames.join("")+" 导入后将覆盖这些题库的题目，是否继续？",doImport);
+    else doImport();
+  };
+  reader.readAsText(f,"utf-8");
+  e.target.value="";
+});
+document.getElementById("btn-template").addEventListener("click",function(){
+  var tpl={name:"我的题库",questions:[
+    {stem:"这里是题干示例：中国的首都是哪里？",options:["上海","北京","广州","深圳"],answer:1,explanation:"这里是解析（可以留空）。"}
+  ]};
+  var blob=new Blob([JSON.stringify(tpl,null,2)],{type:"application/json"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="题库导入模板.json";a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+/* ================= 题库导出 ================= */
+function downloadJSON(obj,filename){
+  var blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download=filename;a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+}
+function bankToJSON(b){
+  return {name:b.name,questions:b.questions.map(function(q){
+    return {stem:q.stem,options:q.options,answer:q.answer,explanation:q.explanation||""};
+  })};
+}
+document.getElementById("btn-export-bank").addEventListener("click",function(){
+  var b=banks.find(function(x){return x.id===curBankId;});
+  if(!b||!b.questions.length){alert("本题库暂无题目，无法导出");return;}
+  downloadJSON(bankToJSON(b),b.name+"-题库.json");
+});
+document.getElementById("btn-export-all").addEventListener("click",function(){
+  var list=banks.filter(function(b){return b.questions.length;}).map(bankToJSON);
+  if(!list.length){alert("还没有可导出的题目");return;}
+  var d=new Date();
+  function p(n){return n<10?"0"+n:n;}
+  downloadJSON(list,"答题单-全部题库-"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+".json");
+});
+
+/* ================= 开卷设置 ================= */
+var COUNT_OPTIONS=[10,15,20,50];
+function openStart(bankId){
+  var b=banks.find(function(x){return x.id===bankId;});
+  if(!b||!b.questions.length){alert("本题库暂无题目，请先添加题目");return;}
+  startCtx={bankId:bankId,count:b.questions.length,order:"seq",fromWrong:false};
+  document.getElementById("start-bank-name").textContent="题库："+b.name+"（共 "+b.questions.length+" 题）";
+  var chips=document.getElementById("count-chips");
+  var opts=COUNT_OPTIONS.filter(function(n){return n<b.questions.length;});
+  var html=opts.map(function(n,i){return '<button class="chip'+(i===0?" active":"")+'" data-count="'+n+'">'+n+' 题</button>';}).join("");
+  html+='<button class="chip'+(opts.length?"":" active")+'" data-count="all">全部 '+b.questions.length+' 题</button>';
+  html+='<button class="chip" data-count="custom">自定义</button>';
+  chips.innerHTML=html;
+  document.getElementById("custom-count-line").hidden=true;
+  document.getElementById("custom-count").value=Math.min(10,b.questions.length);
+  chips.querySelectorAll(".chip").forEach(function(c){c.addEventListener("click",function(){
+    chips.querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");});
+    c.classList.add("active");
+    var v=c.dataset.count;
+    if(v==="all")startCtx.count=b.questions.length;
+    else if(v==="custom"){startCtx.count=null;document.getElementById("custom-count-line").hidden=false;document.getElementById("custom-count").focus();}
+    else{startCtx.count=+v;document.getElementById("custom-count-line").hidden=true;}
+  });});
+  if(!opts.length&&b.questions.length){/* 题库小于10题时默认全部 */ startCtx.count=b.questions.length;}
+  openModal("modal-start");
+}
+document.getElementById("order-chips").querySelectorAll(".chip").forEach(function(c){
+  c.addEventListener("click",function(){
+    document.getElementById("order-chips").querySelectorAll(".chip").forEach(function(x){x.classList.remove("active");});
+    c.classList.add("active");if(startCtx)startCtx.order=c.dataset.order;
+  });
+});
+document.getElementById("custom-count").addEventListener("input",function(){
+  if(startCtx)startCtx.count=+this.value||0;
+});
+document.getElementById("btn-begin").addEventListener("click",function(){
+  var b=banks.find(function(x){return x.id===startCtx.bankId;});
+  var n=startCtx.count;
+  if(!n||n<1){alert("请填写有效的题目数量");return;}
+  if(n>b.questions.length){n=b.questions.length;alert("题库只有 "+n+" 题，已按 "+n+" 题出卷");}
+  closeModal("modal-start");
+  beginQuiz(b,n,startCtx.order==="rand",false);
+});
+
+/* ================= 答题核心 ================= */
+function beginQuiz(bank,n,random,fromWrongItems){
+  var qs;
+  if(fromWrongItems){
+    qs=fromWrongItems.map(function(w){return{stem:w.stem,options:w.options,answer:w.answer,explanation:w.explanation||"",wrongId:w.id};});
+  }else{
+    var idxs=bank.questions.map(function(q,i){return i;});
+    if(random)idxs.sort(function(){return Math.random()-.5;});
+    qs=idxs.slice(0,n).map(function(i){var q=bank.questions[i];return{stem:q.stem,options:q.options,answer:q.answer,explanation:q.explanation||"",srcIndex:i};});
+  }
+  if(!qs.length){alert("没有可练习的题目");return;}
+  quiz={
+    bankId:fromWrongItems?null:bank.id,
+    bankName:fromWrongItems?"错题重练":bank.name,
+    questions:qs,answers:new Array(qs.length).fill(null),
+    current:0,startTs:Date.now(),elapsed:0,finished:false,fromWrong:!!fromWrongItems,streak:0
+  };
+  quiz.timer=setInterval(function(){
+    quiz.elapsed=Math.floor((Date.now()-quiz.startTs)/1000);
+    document.getElementById("quiz-timer").textContent=fmtTime(quiz.elapsed);
+  },500);
+  document.getElementById("quiz-mode").textContent=quiz.bankName+(fromWrongItems?"（答对即移出错题本）":"");
+  renderQuiz();
+  showView("quiz");
+}
+function renderQuiz(){
+  var q=quiz.questions[quiz.current];
+  document.getElementById("quiz-index").textContent="第 "+(quiz.current+1)+" / "+quiz.questions.length+" 题";
+  document.getElementById("quiz-stem").textContent=q.stem;
+  var answered=quiz.answers[quiz.current]!==null;
+  var box=document.getElementById("quiz-options");
+  box.innerHTML=q.options.map(function(o,i){
+    return '<button class="opt" data-i="'+i+'"><span class="letter">'+LETTERS[i]+'</span><span>'+esc(o)+'</span></button>';
+  }).join("");
+  box.querySelectorAll(".opt").forEach(function(btn){
+    btn.addEventListener("click",function(){choose(+btn.dataset.i);});
+  });
+  var fb=document.getElementById("quiz-feedback"),ex=document.getElementById("quiz-explain");
+  fb.textContent="";fb.className="feedback";ex.innerHTML="";
+  if(answered){paintAnswered(q,quiz.answers[quiz.current],false);}
+  document.getElementById("btn-prev").disabled=(quiz.current===0);
+  document.getElementById("btn-next").textContent=(quiz.current===quiz.questions.length-1)?"查看全卷":"下一题";
+  renderNav();renderProgress();
+}
+function paintAnswered(q,chosen,fresh){
+  var opts=document.querySelectorAll("#quiz-options .opt");
+  opts.forEach(function(btn,i){
+    btn.disabled=true;
+    if(i===q.answer)btn.classList.add("correct");
+    else if(i===chosen)btn.classList.add("wrong");
+    else btn.classList.add("dim");
+  });
+  var ok=chosen===q.answer;
+  var fb=document.getElementById("quiz-feedback");
+  fb.textContent=ok?((fresh&&quiz.streak>=2)?"🔥"+quiz.streak+" 连击！太棒了，答案是 "+LETTERS[q.answer]:"✅ 回答正确，答案是 "+LETTERS[q.answer]):(fresh?"💪 别灰心，正确答案是 "+LETTERS[q.answer]+"，下一题拿下！":"❌ 回答错误，正确答案是 "+LETTERS[q.answer]);
+  fb.className="feedback "+(ok?"ok":"bad");
+  if(q.explanation)document.getElementById("quiz-explain").innerHTML='<div class="explain">解析：'+esc(q.explanation)+'</div>';
+}
+/* ================= 答题音效（答对/答错两种提示音） ================= */
+var soundOn=true;
+try{soundOn=localStorage.getItem("quizSound")!=="off";}catch(e){}
+function updateSoundBtn(){document.getElementById("btn-sound").textContent=soundOn?"🔊":"🔇";}
+document.getElementById("btn-sound").addEventListener("click",function(){
+  soundOn=!soundOn;
+  try{localStorage.setItem("quizSound",soundOn?"on":"off");}catch(e){}
+  updateSoundBtn();
+});
+/* 用 Web Audio 合成提示音，零音频文件 */
+function tone(freq,dur,delay,type,vol){
+  var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  var ctx=new AC();
+  var o=ctx.createOscillator(),g=ctx.createGain();
+  o.connect(g);g.connect(ctx.destination);
+  o.type=type||"sine";o.frequency.value=freq;
+  var t0=ctx.currentTime+(delay||0);
+  g.gain.setValueAtTime(vol||.2,t0);
+  g.gain.exponentialRampToValueAtTime(.001,t0+dur);
+  o.start(t0);o.stop(t0+dur);
+}
+/* 答对：上行双音 叮-咚 */
+function sfxOK(){if(!soundOn)return;try{tone(660,.15,0);tone(880,.3,.12);}catch(e){}}
+/* 答错：下行低音 */
+function sfxBad(){if(!soundOn)return;try{tone(220,.2,0,"square",.15);tone(150,.3,.15,"square",.15);}catch(e){}}
+
+function choose(i){
+  if(quiz.answers[quiz.current]!==null)return;
+  var q=quiz.questions[quiz.current];
+  quiz.answers[quiz.current]=i;
+  var ok=(i===q.answer);
+  if(ok){quiz.streak=(quiz.streak||0)+1;sfxOK();}
+  else{quiz.streak=0;sfxBad();}
+  paintAnswered(q,i,true);
+  renderNav();renderProgress();
+  if(!ok){
+    var entry={bankId:quiz.bankId,bankName:quiz.bankName,stem:q.stem,options:q.options,answer:q.answer,explanation:q.explanation||"",wrongCount:1,myAnswer:i,mastered:false};
+    var dup=wrongs.find(function(w){return !w.mastered&&w.stem===q.stem&&(w.bankId===quiz.bankId);});
+    if(dup){dup.wrongCount++;dup.myAnswer=i;dbPut("wrongBook",dup).then(function(){return dbAll("wrongBook");}).then(function(list){wrongs=list;});}
+    else dbAdd("wrongBook",entry).then(function(){return dbAll("wrongBook");}).then(function(list){wrongs=list;});
+  }else if(q.wrongId){
+    // 错题重练：答对即标记已掌握
+    var w=wrongs.find(function(x){return x.id===q.wrongId;});
+    if(w){w.mastered=true;dbPut("wrongBook",w);}
+  }
+  if(quiz.answers.every(function(a){return a!==null;})){
+    setTimeout(finishQuiz,450);
+  }
+}
+function renderNav(){
+  var nav=document.getElementById("quiz-nav");
+  nav.innerHTML=quiz.questions.map(function(q,i){
+    var cls="";
+    if(quiz.answers[i]!==null)cls=(quiz.answers[i]===q.answer)?"correct":"wrong";
+    if(i===quiz.current)cls+=" current";
+    return '<button class="'+cls.trim()+'" data-jump="'+i+'">'+(i+1)+'</button>';
+  }).join("");
+  nav.querySelectorAll("[data-jump]").forEach(function(b){b.addEventListener("click",function(){quiz.current=+b.dataset.jump;renderQuiz();});});
+}
+function renderProgress(){
+  var done=quiz.answers.filter(function(a){return a!==null;}).length;
+  var pct=done/quiz.questions.length*100;
+  document.getElementById("quiz-progress").style.width=pct+"%";
+  document.getElementById("quiz-runner").style.left=pct+"%";
+}
+document.getElementById("btn-prev").addEventListener("click",function(){if(quiz&&quiz.current>0){quiz.current--;renderQuiz();}});
+document.getElementById("btn-next").addEventListener("click",function(){
+  if(!quiz)return;
+  if(quiz.current<quiz.questions.length-1){quiz.current++;renderQuiz();}
+  else{
+    var done=quiz.answers.filter(function(a){return a!==null;}).length;
+    if(done<quiz.questions.length)alert("还有 "+(quiz.questions.length-done)+" 题未作答，答完全部题目后自动结算；也可点「退出」保存记录。");
+    else finishQuiz();
+  }
+});
+
+/* ================= 结算 ================= */
+function finishQuiz(){
+  if(quiz.finished)return;
+  quiz.finished=true;
+  clearInterval(quiz.timer);
+  var total=quiz.questions.length;
+  var correct=quiz.questions.filter(function(q,i){return quiz.answers[i]===q.answer;}).length;
+  var rec={bankId:quiz.bankId,bankName:quiz.bankName,date:Date.now(),total:total,correct:correct,
+    accuracy:Math.round(correct/total*100),durationSec:quiz.elapsed,
+    detail:quiz.questions.map(function(q,i){return{stem:q.stem,chosen:quiz.answers[i],isCorrect:quiz.answers[i]===q.answer};})};
+  dbAdd("records",rec).then(function(){loadAll();});
+  document.getElementById("settle-bank").textContent="题库："+quiz.bankName;
+  var acc=rec.accuracy;
+  document.getElementById("settle-title").textContent=
+    acc>=90?"🎉 太棒了，成绩优秀！":acc>=75?"👍 不错哦，继续加油！":acc>=60?"💪 及格啦，再练练更稳！":"📖 别灰心，看看错题再战！";
+  document.getElementById("settle-total").textContent=total;
+  document.getElementById("settle-correct").textContent=correct;
+  document.getElementById("settle-acc").textContent=rec.accuracy+"%";
+  document.getElementById("settle-time").textContent=fmtTime(quiz.elapsed);
+  openModal("modal-settle");
+}
+document.getElementById("btn-settle-home").addEventListener("click",function(){closeModal("modal-settle");endQuiz();showView("home");renderBanks();});
+document.getElementById("btn-settle-wrong").addEventListener("click",function(){closeModal("modal-settle");endQuiz();showView("wrong");renderWrong();});
+document.getElementById("btn-settle-again").addEventListener("click",function(){
+  var bid=quiz?quiz.bankId:null;
+  closeModal("modal-settle");endQuiz();
+  if(bid)openStart(bid);else showView("home");
+});
+function endQuiz(){if(quiz&&quiz.timer)clearInterval(quiz.timer);quiz=null;}
+
+/* ================= 退出答题 ================= */
+document.getElementById("btn-quiz-exit").addEventListener("click",function(){
+  if(!quiz)return;
+  askConfirm("退出答题","确定退出本次答题吗？退出后本次作答不会保存记录。",function(){
+    endQuiz();showView("home");renderBanks();
+  });
+});
+
+/* ================= 错题本 ================= */
+function renderWrong(){
+  var box=document.getElementById("wrong-list");
+  var list=wrongs.filter(function(w){return !w.mastered;});
+  if(!list.length){box.innerHTML='<div class="empty">太棒了，当前没有待消灭的错题！</div>';return;}
+  var byBank={};
+  list.forEach(function(w){
+    var key=w.bankName||"未知题库";
+    (byBank[key]=byBank[key]||[]).push(w);
+  });
+  var keys=Object.keys(byBank);
+  var html=keys.map(function(bn,ki){
+    var items=byBank[bn];
+    return '<div class="wrong-bank-title"><span>'+esc(bn)+'（'+items.length+'）</span>'+
+      '<button class="btn small primary" data-rep="'+ki+'">重练本题库错题</button></div>'+
+      items.map(function(w){
+        return '<div class="wrong-item">'+
+          '<div class="stem">'+esc(w.stem)+'</div>'+
+          '<div class="muted">你的答案：<b class="bad" style="color:var(--bad)">'+(w.myAnswer!=null?LETTERS[w.myAnswer]:"—")+'</b>　正确答案：<b style="color:var(--ok)">'+LETTERS[w.answer]+'</b>　答错 '+w.wrongCount+' 次</div>'+
+          (w.explanation?'<div class="explain" style="margin-top:8px;">解析：'+esc(w.explanation)+'</div>':'')+
+          '<div class="row" style="margin-top:8px;"><button class="btn small danger" data-rm="'+w.id+'">移出</button></div>'+
+        '</div>';
+      }).join("");
+  }).join("");
+  box.innerHTML=html;
+  box.querySelectorAll("[data-rep]").forEach(function(b){b.addEventListener("click",function(){
+    var bn=keys[+b.dataset.rep];
+    var items=list.filter(function(w){return (w.bankName||"未知题库")===bn;});
+    beginQuiz(null,items.length,false,items);
+  });});
+  box.querySelectorAll("[data-rm]").forEach(function(b){b.addEventListener("click",function(){
+    askConfirm("移出错题","确定把这道题移出错题本？",function(){
+      dbDel("wrongBook",+b.dataset.rm).then(function(){loadAll().then(renderWrong);});
+    });
+  });});
+}
+document.getElementById("btn-repractice-all").addEventListener("click",function(){
+  var list=wrongs.filter(function(w){return !w.mastered;});
+  if(!list.length){alert("当前没有待消灭的错题");return;}
+  beginQuiz(null,list.length,false,list);
+});
+
+/* ================= 历史 ================= */
+function renderHistory(){
+  var box=document.getElementById("history-list");
+  if(!records.length){box.innerHTML='<div class="empty">还没有答题记录，去题库开始第一次答题吧</div>';return;}
+  box.innerHTML=records.slice().sort(function(a,b){return b.date-a.date;}).map(function(r){
+    return '<div class="rec-item">'+
+      '<div><div style="font-weight:600;">'+esc(r.bankName)+(r.partial?'<span class="tag" style="color:var(--muted);background:#f3f4f6;">中途保存</span>':'')+'</div>'+
+      '<div class="muted">'+fmtDate(r.date)+'　答对 '+r.correct+' / '+r.total+' 题　用时 '+fmtDur(r.durationSec)+'</div></div>'+
+      '<div class="row"><div class="rec-acc">'+r.accuracy+'%</div>'+
+      '<button class="btn small danger" data-delrec="'+r.id+'">删除</button></div>'+
+    '</div>';
+  }).join("");
+  box.querySelectorAll("[data-delrec]").forEach(function(b){b.addEventListener("click",function(){
+    askConfirm("删除记录","确定删除这条答题记录？",function(){
+      dbDel("records",+b.dataset.delrec).then(function(){loadAll().then(renderHistory);});
+    });
+  });});
+}
+document.getElementById("btn-clear-history").addEventListener("click",function(){
+  if(!records.length){alert("暂无历史记录");return;}
+  askConfirm("清空历史","确定清空全部 "+records.length+" 条答题记录？该操作不可恢复。",function(){
+    dbClear("records").then(function(){loadAll().then(renderHistory);});
+  });
+});
+
+/* ================= 启动 ================= */
+function seedBuiltins(){
+  return dbAll("banks").then(function(list){
+    var chain=Promise.resolve();
+    /* 1) 清理已下线的旧示例题库（仅 builtin 标记） */
+    var removed=["计算机基础（内置示例）","综合素质常识（内置示例）"];
+    list.filter(function(b){return b.builtin&&removed.indexOf(b.name)>=0;})
+        .forEach(function(b){chain=chain.then(function(){return dbDel("banks",b.id);});});
+    return chain.then(function(){
+      return dbAll("banks").then(function(list2){
+        var chain2=Promise.resolve();
+        BUILTIN.forEach(function(def){
+          /* 识别本内置题库的所有副本：
+             ① 带 builtinKey 的（新数据，最可靠）；
+             ② 老版无 key 但名字相同/以其开头；
+             ③ 老版无 key 但题目内容与内置定义有重合（改名改得再离谱也能认出） */
+          var stems=def.questions.map(function(q){return q.stem;});
+          var mine=list2.filter(function(b){
+            if(!b.builtin)return false;
+            if(b.builtinKey)return b.builtinKey===def.key;
+            if(b.name===def.name||b.name.indexOf(def.name)===0)return true;
+            return (b.questions||[]).some(function(q){return stems.indexOf(q.stem)>=0;});
+          });
+          if(!mine.length){
+            /* 完全没有才补种 */
+            chain2=chain2.then(function(){
+              return dbAdd("banks",{name:def.name,createdAt:Date.now(),builtin:true,builtinKey:def.key,questions:def.questions});
+            });
+          }else{
+            mine.sort(function(a,b){return a.id-b.id;});
+            var keep=mine[0];
+            /* 给保留下来的老记录补上稳定标识 */
+            if(!keep.builtinKey){keep.builtinKey=def.key;chain2=chain2.then(function(){return dbPut("banks",keep);});}
+            /* 其余重复副本删除 */
+            mine.slice(1).forEach(function(b){
+              chain2=chain2.then(function(){return dbDel("banks",b.id);});
+            });
+          }
+        });
+        return chain2;
+      });
+    });
+  });
+}
+function loadAll(){
+  return Promise.all([dbAll("banks"),dbAll("records"),dbAll("wrongBook")]).then(function(r){
+    banks=r[0];records=r[1];wrongs=r[2];
+  });
+}
+function showBanner(msg){
+  if(document.querySelector(".banner"))return;
+  var d=document.createElement("div");
+  d.className="banner";d.textContent=msg;
+  document.body.insertBefore(d,document.body.firstChild);
+}
+function boot(again){
+  shimLoad();
+  dbPromise=openDB().catch(function(){storageOK=false;shimLoad();return null;});
+  seedBuiltins().then(loadAll).then(function(){
+    renderBanks();renderWrong();renderHistory();
+    updateSoundBtn();
+    if(!storageOK)showBanner("当前环境不支持浏览器本地数据库，答题数据仅本次会话有效。请将本文件下载到电脑后，用 Chrome 或 Edge 浏览器直接打开，即可永久保存数据。");
+    showView("home");
+  }).catch(function(err){
+    if(!again){storageOK=false;shimLoad();boot(true);}
+    else showBanner("数据加载出错，请刷新页面重试。"+err);
+  });
+}
+boot();
+</script>
+</body>
+</html>
